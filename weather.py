@@ -6,20 +6,14 @@ WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 def get_weather(city: str):
     url = "https://api.openweathermap.org/data/2.5/weather"
     params = {
-        "q": city,
+        "q": city,  # original
         "appid": WEATHER_API_KEY,
         "units": "metric"
     }
 
-    print("🌦 WEATHER KEY:", WEATHER_API_KEY)
-    print("🌦 REQUEST URL:", url)
-    print("🌦 PARAMS:", params)
-
     response = requests.get(url, params=params)
-    print("🌦 STATUS CODE:", response.status_code)
-    print("🌦 RESPONSE BODY:", response.text)
-
     data = response.json()
+
     if response.status_code != 200:
         return f"Sorry, I couldn’t fetch the weather for {city}."
 

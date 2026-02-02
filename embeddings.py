@@ -3,14 +3,12 @@ import requests
 
 HF_API_KEY = os.getenv("HF_API_KEY")
 
-EMBEDDING_URL = (
-    "https://api-inference.huggingface.co/"
-    "pipeline/feature-extraction/"
-    "sentence-transformers/all-MiniLM-L6-v2"
-)
+MODEL_ID = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDING_URL = f"https://api-inference.huggingface.co/models/{MODEL_ID}"
 
 HEADERS = {
-    "Authorization": f"Bearer {HF_API_KEY}"
+    "Authorization": f"Bearer {HF_API_KEY}",
+    "Content-Type": "application/json"
 }
 
 def get_embedding(text: str):
@@ -19,5 +17,13 @@ def get_embedding(text: str):
         headers=HEADERS,
         json={"inputs": text}
     )
+
     response.raise_for_status()
-    return response.json()[0]
+
+    data = response.json()
+
+    # HF sometimes returns nested lists
+    if isinstance(data[0], list):
+        return data[0]
+
+    return data

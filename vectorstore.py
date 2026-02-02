@@ -1,32 +1,26 @@
-import chromadb
+from chromadb import Client
 from embeddings import get_embedding
 
-client = chromadb.Client()
-collection = client.get_or_create_collection(name="restaurants")
+client = Client()
+collection = client.get_or_create_collection("restaurants")
 
 def seed_restaurants():
     restaurants = [
-        "Sunny Veggie is a vegetarian restaurant near Marina Beach",
-        "Spice Hub serves South Indian food in T Nagar",
-        "Ocean Treat offers seafood near Besant Nagar"
+        "Saravana Bhavan vegetarian South Indian restaurant",
+        "Anjappar Chettinad spicy non-veg food",
+        "Sangeetha pure veg family restaurant"
     ]
 
-    for idx, text in enumerate(restaurants):
-        try:
-            collection.add(
-                documents=[text],
-                embeddings=[get_embedding(text)],
-                ids=[str(idx)]
-            )
-        except Exception as e:
-            print(f"⚠️ Failed to seed restaurant {idx}: {e}")
+    for i, text in enumerate(restaurants):
+        collection.add(
+            ids=[str(i)],
+            documents=[text],
+            embeddings=[get_embedding(text)]
+        )
 
 def search_restaurants(query: str):
-    query_embedding = get_embedding(query)
-
     results = collection.query(
-        query_embeddings=[query_embedding],
+        query_embeddings=[get_embedding(query)],
         n_results=2
     )
-
     return results["documents"][0]
